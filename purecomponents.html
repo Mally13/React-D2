@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello React</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="app">
+        <!-- my app renders here -->
+        </div>
+        <script src="react/react.js"></script>
+        <script src="react/react-dom.js"></script>
+        <script src="react/babel.js"></script>
+
+        <script type="text/babel">
+            // Now if you paste the string “LOLz” replacing “Bobb” (or any string with 4 characters),
+            // you see:
+            // TextAreaCounter::render
+            // TextAreaCounter::componentDidUpdate
+            // As you see there’s no reason to re-render <Counter>, because its props have not
+            // changed. The new string has the same number of characters.
+
+
+            //This is the parent
+            class LifecycleLoggerComponent extends React.PureComponent {
+                static getName() {}
+                componentDidMount() {
+                console.log(this.constructor.getName() + '::componentDidMount');
+                }
+                componentWillUnmount() {
+                console.log(this.constructor.getName() + '::componentWillUnmount');
+                }
+                componentDidUpdate(prevProps, prevState, snapshot) {
+                console.log(this.constructor.getName() + '::componentDidUpdate');
+                }
+                
+            }
+            //this is the child(Inheritance)
+            class Counter extends LifecycleLoggerComponent{
+                static getName(){
+                    return "Counter"
+                }
+                render(){
+                    return <h3>{this.props.count}</h3>
+                }
+            }
+
+            Counter.defaultProps={
+                count:0,
+            }
+          
+            class TextAreaCounter extends LifecycleLoggerComponent{
+                static  getName(){
+                    return "TextAreaCounter"
+                }
+                constructor(){
+                    super();
+                    this.state={};
+                }
+                
+
+                onTextChange(event) {
+                    this.setState({
+                        text: event.target.value,
+                    });
+                }
+
+                render(){
+                    const text= 'text' in this.state ? this.state.text : this.props.text;
+                    return(
+                        <div>                                
+                            <textarea
+                                value={text}
+                                onChange={event=>this.onTextChange(event)}/>
+
+                            {text.length > 0
+                                ? <Counter count={text.length}/>
+                                :null
+                            }
+                        </div>
+                    );
+                }
+            }
+
+            TextAreaCounter.defaultProps={
+                text:'Bobb',
+            };
+
+            ReactDOM.render(
+                <TextAreaCounter/>,
+                document.getElementById('app')
+
+            );
+        </script>
+    </body>
+</html>
